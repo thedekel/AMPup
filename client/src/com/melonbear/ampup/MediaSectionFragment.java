@@ -16,18 +16,11 @@ package com.melonbear.ampup;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
@@ -240,7 +233,7 @@ public class MediaSectionFragment extends Fragment {
     // mFileName += "/audio.3gp";
 
     mFileName += "/" + this.username + "_" + timestamp + ".3gp";
-    Log.i(this.LOG_TAG, mFileName);
+    Log.i("tag", mFileName);
   }
 
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
