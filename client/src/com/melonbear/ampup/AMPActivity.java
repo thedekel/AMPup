@@ -1,11 +1,24 @@
 package com.melonbear.ampup;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +47,16 @@ public class AMPActivity extends FragmentActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_amp);
+
+    SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    if (preferences.getBoolean("FirstRun", true)) {
+      Log.i("tag", "This is the first run");
+      onFirstRun();
+      Editor editor = preferences.edit();
+      editor.putBoolean("FirstRun", false);
+      editor.commit();
+    }
+
     // Create the adapter that will return a fragment for each of the three
     // primary sections
     // of the app.
@@ -118,4 +141,35 @@ public class AMPActivity extends FragmentActivity {
     }
   }
 
+  public void onFirstRun() {
+    AssetManager am = this.getAssets();
+    AssetFileDescriptor afd = null;
+    try {
+      afd = am.openFd("metronome120bpm.mp3");
+
+      // Create new file to copy into.
+      File file = new File(Environment.getExternalStorageDirectory()
+          + java.io.File.separator + "metronome120bpm.mp3");
+      file.createNewFile();
+
+      copyFdToFile(afd.getFileDescriptor(), file);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void copyFdToFile(FileDescriptor src, File dst)
+      throws IOException {
+    FileChannel inChannel = new FileInputStream(src).getChannel();
+    FileChannel outChannel = new FileOutputStream(dst).getChannel();
+    try {
+      inChannel.transferTo(0, inChannel.size(), outChannel);
+    } finally {
+      if (inChannel != null)
+        inChannel.close();
+      if (outChannel != null)
+        outChannel.close();
+    }
+  }
 }

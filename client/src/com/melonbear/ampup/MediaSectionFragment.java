@@ -16,11 +16,18 @@ package com.melonbear.ampup;
  * limitations under the License.
  */
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
@@ -50,6 +57,8 @@ public class MediaSectionFragment extends Fragment {
   private PlayButton mPlayButton = null;
   private MediaPlayer mPlayer = null;
 
+  private PlayMetronomeButton mPlayMetronomeButton = null;
+  private MediaPlayer mPlayerMetronome = null;
   private String username = null;
 
   private void onRecord(boolean start) {
@@ -65,6 +74,14 @@ public class MediaSectionFragment extends Fragment {
       startPlaying();
     } else {
       stopPlaying();
+    }
+  }
+
+  private void onPlayMetronome(boolean start) {
+    if (start) {
+      startPlayingMetronome();
+    } else {
+      stopPlayingMetronome();
     }
   }
 
@@ -93,6 +110,36 @@ public class MediaSectionFragment extends Fragment {
   private void stopPlaying() {
     mPlayer.release();
     mPlayer = null;
+  }
+
+  private void stopPlayingMetronome() {
+    mPlayerMetronome.release();
+    mPlayerMetronome = null;
+  }
+
+  private void startPlayingMetronome() {
+    mPlayerMetronome = new MediaPlayer();
+    OnCompletionListener completionListener = new OnCompletionListener() {
+
+      public void onCompletion(MediaPlayer mp) {
+        mPlayMetronomeButton.setText("Start Playing");
+        mPlayMetronomeButton.mStartPlayingMetronome = !mPlayMetronomeButton.mStartPlayingMetronome;
+        Log.i(LOG_TAG, "Finished Playing");
+      }
+    };
+
+    mPlayerMetronome.setOnCompletionListener(completionListener);
+    try {
+      String metronomeFileName = Environment.getExternalStorageDirectory()
+          .getAbsolutePath();
+      metronomeFileName += "/metronome120bpm.mp3";
+
+      mPlayerMetronome.setDataSource(metronomeFileName);
+      mPlayerMetronome.prepare();
+      mPlayerMetronome.start();
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "prepare() failed");
+    }
   }
 
   private void startRecording() {
@@ -163,12 +210,36 @@ public class MediaSectionFragment extends Fragment {
     }
   }
 
+  class PlayMetronomeButton extends Button {
+    boolean mStartPlayingMetronome = true;
+    OnClickListener clicker = new OnClickListener() {
+
+      public void onClick(View v) {
+        onPlayMetronome(mStartPlayingMetronome);
+        if (mStartPlayingMetronome) {
+          setText("Stop Metronome");
+        } else {
+          setText("Start Metronome");
+        }
+        mStartPlayingMetronome = !mStartPlayingMetronome;
+
+      }
+    };
+
+    public PlayMetronomeButton(Context ctx) {
+      super(ctx);
+      setText("MN");
+      setOnClickListener(clicker);
+    }
+  }
+
   public MediaSectionFragment() {
 
     mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
     String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
     // mFileName += "/audio.3gp";
-    mFileName += "/AMPup/" + this.username + "_" + timestamp + ".3gp";
+
+    mFileName += "/" + this.username + "_" + timestamp + ".3gp";
     Log.i(this.LOG_TAG, mFileName);
   }
 
@@ -183,6 +254,10 @@ public class MediaSectionFragment extends Fragment {
         ViewGroup.LayoutParams.WRAP_CONTENT, 0));
     mPlayButton = new PlayButton(getActivity());
     ll.addView(mPlayButton, new LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+    mPlayMetronomeButton = new PlayMetronomeButton(getActivity());
+    ll.addView(mPlayMetronomeButton, new LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT,
         ViewGroup.LayoutParams.WRAP_CONTENT, 0));
     return ll;
@@ -201,4 +276,5 @@ public class MediaSectionFragment extends Fragment {
       mPlayer = null;
     }
   }
+
 }
