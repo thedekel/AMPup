@@ -8,7 +8,8 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , login = require('./login')
-
+  , mongoacc = require('./mongoacc')
+  , store = new express.session.MemoryStore
   , questions = require('./questions');
 
 var app = express();
@@ -21,6 +22,9 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(mongoacc.opendb('ampapp'));
+  app.use(express.session({secret:'vidurvidurvidur', store:store}));
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
 });
