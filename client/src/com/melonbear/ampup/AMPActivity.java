@@ -66,21 +66,49 @@ public class AMPActivity extends FragmentActivity {
 
     @Override
     public Fragment getItem(int i) {
-      if (i == 0)
-        return new ListSectionFragment();
-      Fragment fragment = new DummySectionFragment();
-      Bundle args = new Bundle();
-      args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-      fragment.setArguments(args);
-      return fragment;
+      switch (i) {
+        case 0:
+          return new ListSectionFragment();
+        case 1:
+          return new MediaSectionFragment();
+        case 2:
+          Fragment dummy = new DummySectionFragment();
+          Bundle args = new Bundle();
+          args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 3);
+          dummy.setArguments(args);
+          return dummy;
+      }
+      return null;
     }
 
     @Override
     public int getCount() {
       return 3;
     }
+  }
+
+  public static class ListSectionFragment extends ListFragment {
+    public ListSectionFragment() {}
+
+    public static final String ARG_SECTION_NUMBER = "section_number";
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        Bundle savedInstanceState) {
+      View v = inflater.inflate(R.layout.list_view, null);
+      String[] lessons = new String[10];
+      for (int i = 0; i < lessons.length; i++) {
+        lessons[i] = String.format("Lesson %d", i + 1);
+      }
+      setListAdapter(new ArrayAdapter<String>(getActivity(), 
+          android.R.layout.simple_list_item_1, lessons));
+      return v;
+    }
+
+    public int getCount() {
+      return 3;
+    }
+
     public CharSequence getPageTitle(int position) {
       switch (position) {
       case 0:
@@ -94,33 +122,12 @@ public class AMPActivity extends FragmentActivity {
     }
   }
 
-  public static class ListSectionFragment extends ListFragment {
-    public ListSectionFragment() {
-    }
-
-    public static final String ARG_SECTION_NUMBER = "section_number";
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-      View v = inflater.inflate(R.layout.list_view, null);
-      String[] lessons = new String[10];
-      for (int i = 0; i < lessons.length; i++) {
-        lessons[i] = String.format("Lesson %d", i);
-      }
-      setListAdapter(new ArrayAdapter<String>(getActivity(), 
-          android.R.layout.simple_list_item_1, lessons));
-      return v;
-    }
-  }
-
   /**
    * A dummy fragment representing a section of the app, but that simply
    * displays dummy text.
    */
   public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {
-    }
+    public DummySectionFragment() {}
 
     public static final String ARG_SECTION_NUMBER = "section_number";
 
