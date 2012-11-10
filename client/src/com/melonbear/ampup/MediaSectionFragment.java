@@ -25,6 +25,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -116,7 +117,6 @@ public class MediaSectionFragment extends Fragment {
 
       public void onCompletion(MediaPlayer mp) {
         mPlayMetronomeButton.setText("Start Playing");
-        mPlayMetronomeButton.mStartPlayingMetronome = !mPlayMetronomeButton.mStartPlayingMetronome;
         Log.i(LOG_TAG, "Finished Playing");
       }
     };
@@ -205,9 +205,17 @@ public class MediaSectionFragment extends Fragment {
 
   class PlayMetronomeButton extends Button {
     boolean mStartPlayingMetronome = true;
-    OnClickListener clicker = new OnClickListener() {
 
-      public void onClick(View v) {
+    CountDownTimer timer = new CountDownTimer(3050, 1000) {
+
+      @Override
+      public void onTick(long arg0) {
+        Log.i("tag", Long.toString(arg0));
+        setText(Integer.toString(Math.round(Math.round(arg0 / 1000.0))));
+      }
+
+      @Override
+      public void onFinish() {
         onPlayMetronome(mStartPlayingMetronome);
         if (mStartPlayingMetronome) {
           setText("Stop Metronome");
@@ -215,7 +223,18 @@ public class MediaSectionFragment extends Fragment {
           setText("Start Metronome");
         }
         mStartPlayingMetronome = !mStartPlayingMetronome;
+      }
+    };
+    OnClickListener clicker = new OnClickListener() {
 
+      public void onClick(View v) {
+        if (mStartPlayingMetronome) {
+          timer.start();
+        } else {
+          onPlayMetronome(mStartPlayingMetronome);
+          mStartPlayingMetronome = !mStartPlayingMetronome;
+          setText("MN");
+        }
       }
     };
 
@@ -230,7 +249,6 @@ public class MediaSectionFragment extends Fragment {
 
     mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
     String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-    // mFileName += "/audio.3gp";
 
     mFileName += "/" + this.username + "_" + timestamp + ".3gp";
     Log.i("tag", mFileName);
