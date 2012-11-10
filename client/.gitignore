@@ -1,0 +1,16 @@
+# Binaries
+*.apk
+*.ap_
+
+# Dex VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+
+# Local config
+local.properties
