@@ -77,7 +77,6 @@ public class MediaSectionFragment extends Fragment {
         mPlayButton.setText("Start Playing");
         mPlayButton.mStartPlaying = !mPlayButton.mStartPlaying;
         Log.i(LOG_TAG, "Finished Playing");
-
       }
     };
 
