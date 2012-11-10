@@ -1,18 +1,29 @@
 package com.melonbear.ampup;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class AMPActivity extends FragmentActivity {
@@ -36,6 +47,16 @@ public class AMPActivity extends FragmentActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_amp);
+
+    SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    if (preferences.getBoolean("FirstRun", true)) {
+      Log.i("tag", "This is the first run");
+      onFirstRun();
+      Editor editor = preferences.edit();
+      editor.putBoolean("FirstRun", false);
+      editor.commit();
+    }
+
     // Create the adapter that will return a fragment for each of the three
     // primary sections
     // of the app.
@@ -66,49 +87,26 @@ public class AMPActivity extends FragmentActivity {
 
     @Override
     public Fragment getItem(int i) {
-      switch (i) {
-        case 0:
-          return new ListSectionFragment();
-        case 1:
-          return new MediaSectionFragment();
-        case 2:
-          Fragment dummy = new DummySectionFragment();
-          Bundle args = new Bundle();
-          args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 3);
-          dummy.setArguments(args);
-          return dummy;
+      Fragment fragment;
+
+      if (i == 1) {
+        fragment = new MediaSectionFragment();
+      } else {
+        fragment = new DummySectionFragment();
       }
-      return null;
+
+      Bundle args = new Bundle();
+      args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
+      fragment.setArguments(args);
+      return fragment;
     }
 
     @Override
     public int getCount() {
       return 3;
     }
-  }
-
-  public static class ListSectionFragment extends ListFragment {
-    public ListSectionFragment() {}
-
-    public static final String ARG_SECTION_NUMBER = "section_number";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-      View v = inflater.inflate(R.layout.list_view, null);
-      String[] lessons = new String[10];
-      for (int i = 0; i < lessons.length; i++) {
-        lessons[i] = String.format("Lesson %d", i + 1);
-      }
-      setListAdapter(new ArrayAdapter<String>(getActivity(), 
-          android.R.layout.simple_list_item_1, lessons));
-      return v;
-    }
-
-    public int getCount() {
-      return 3;
-    }
-
     public CharSequence getPageTitle(int position) {
       switch (position) {
       case 0:
@@ -127,7 +125,8 @@ public class AMPActivity extends FragmentActivity {
    * displays dummy text.
    */
   public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {}
+    public DummySectionFragment() {
+    }
 
     public static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -139,6 +138,40 @@ public class AMPActivity extends FragmentActivity {
       Bundle args = getArguments();
       textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
       return textView;
+    }
+  }
+
+  public void onFirstRun() {
+    AssetManager am = this.getAssets();
+    AssetFileDescriptor afd = null;
+    try {
+      afd = am.openFd("metronome120bpm.mp3");
+
+      // Create new file to copy into.
+      File file = new File(Environment.getExternalStorageDirectory()
+          + java.io.File.separator + "metronome120bpm.mp3");
+      file.createNewFile();
+
+      copyFdToFile(afd.getFileDescriptor(), file);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void copyFdToFile(FileDescriptor src, File dst)
+      throws IOException {
+    @SuppressWarnings("resource")
+    FileChannel inChannel = new FileInputStream(src).getChannel();
+    @SuppressWarnings("resource")
+    FileChannel outChannel = new FileOutputStream(dst).getChannel();
+    try {
+      inChannel.transferTo(0, inChannel.size(), outChannel);
+    } finally {
+      if (inChannel != null)
+        inChannel.close();
+      if (outChannel != null)
+        outChannel.close();
     }
   }
 }
