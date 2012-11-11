@@ -79,9 +79,9 @@ public class ServerTask extends AsyncTask<Object, Integer, List<Lesson>> {
       Log.i("JSON OBJECT", obj.toString());
       if (obj.has("title")) {
         String title = (String) obj.get("title");
-        Lesson temp = new Lesson(title);
-        temp.mSubtitle = (String) obj.get("subtitle");
-        temp.mID = (String) obj.get("_id");
+        Lesson temp = new Lesson(title, null, null);
+        temp.subtitle = (String) obj.get("subtitle");
+        temp.id = (String) obj.get("_id");
         result.add(temp);
       }
     }

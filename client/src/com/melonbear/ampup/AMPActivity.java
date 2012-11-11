@@ -3,6 +3,7 @@ package com.melonbear.ampup;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -42,8 +43,8 @@ public class AMPActivity extends FragmentActivity implements
     // Create the adapter that will return a fragment for each of the three
     // primary sections
     // of the app.
-    mSectionsPagerAdapter =
-        new SectionsPagerAdapter(getSupportFragmentManager());
+    mSectionsPagerAdapter = new SectionsPagerAdapter(
+        getSupportFragmentManager());
 
     // Set up the action bar.
     final ActionBar actionBar = getActionBar();
@@ -143,8 +144,15 @@ public class AMPActivity extends FragmentActivity implements
         Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.list_view, null);
       // In lieu of making custom layout. Just create custom padding here
-      v.setPadding(15,15,15,15);
+      // v.setPadding(15,15,15,15);
       return v;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+      super.onListItemClick(l, v, position, id);
+      Intent intent = new Intent(getActivity(), LessonActivity.class);
+      startActivity(intent);
     }
   }
 

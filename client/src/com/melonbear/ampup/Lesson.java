@@ -7,20 +7,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Lesson {
-  public String mName;
-  public String mSubtitle = "no description";
-  public String mImagePath = "";
-  public String mAudioPath = "";
-  public String mID = "";
-  public ArrayList<Response> mResponses;
-  
-  public Lesson(String name) {
-    mName = name;
-  }
+	public String title, subtitle, description, imagePath, audioPath, id;
+	public ArrayList<Response> mResponses;
+	
+	public Lesson(String mTitle, String mSubtitle, String mDescription) {
+		this.title = mTitle;
+		this.subtitle = mSubtitle;
+		this.description = mDescription;
+	}
 
-  public String toString() {
-    return mName;
-  }
+	public String toString() {
+		return title;
+	}
   
   public void getResponsesFromJson(JSONArray responses){
     JSONObject curr;

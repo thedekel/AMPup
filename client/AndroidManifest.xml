@@ -16,14 +16,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".AMPActivity"
-            android:label="@string/title_activity_amp" >
-        </activity>
-        <activity
-            android:name=".LessonActivity"
-            android:label="@string/title_activity_lesson" >
-        </activity>
-        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
             <intent-filter>
@@ -31,6 +23,22 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LessonActivity"
+            android:label="@string/title_activity_lesson" >
+        </activity>
+        <activity
+            android:name=".AMPActivity"
+            android:label="@string/title_activity_amp" >
+        </activity>
+        <activity
+            android:name=".PostingActivity"
+            android:label="@string/title_activity_posting" >
+        </activity>
+        <activity
+            android:name=".SubmitActivity"
+            android:label="@string/title_activity_submit" >
         </activity>
     </application>
 

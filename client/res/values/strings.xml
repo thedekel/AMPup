@@ -10,5 +10,7 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_lesson">LessonActivity</string>
+    <string name="title_activity_posting">PostingActivity</string>
+    <string name="title_activity_submit">SubmitActivity</string>
 
 </resources>
