@@ -2,6 +2,7 @@ var Db = require('mongodb').Db
   , Connection = require('mongodb').Connection
   , Server = require('mongodb').Server
   , BSON = require('mongodb').BSON
+  , async = require("async")
   , ObjectID = require('mongodb').ObjectID;
 
 exports.opendb = function(dbname){
@@ -11,6 +12,17 @@ exports.opendb = function(dbname){
     req.mydb = db;
     next();
   };
+};
+
+exports.getUser = function(db, session, cb){
+  db.collection('sessions', function(err, coll){
+    coll.findOne({'sess':session}, function(err, user){
+      if (err){
+        return cb(err);
+      }
+      return cb(null, user);
+    });
+  });
 };
 
 exports.getSession = function(db, user_name, cb){
@@ -30,23 +42,42 @@ exports.getSession = function(db, user_name, cb){
   });
 };
 
+
 exports.getQuestion = function(db, qid, cb){
   db.collection('questions', function(err, coll){
     if (err) {
       return cb(err);
     }
-    coll.find({id:qid}, function(err, qs){
+    coll.findOne({_id:new ObjectID(qid)}, function(err, qs){
       if (err) {
         return cb(err);
       }
-      qs.toArray(function(err, qsArr){
+      db.collection('answers', function(err, anscoll){
         if (err) {
           return cb(err);
         }
-        if (qsArr.length > 0){
-          return cb(null, qsArr[0]);        
-        }
-        return cb(true);
+        anscoll.find({question:qs._id}, function(err, ansC){
+          if (err) {
+            return cb(err);
+          }
+          ansC.toArray(function(err, arr){
+            async.map(arr, 
+              function(ele, cb){
+                exports.getUser(db, ele.session, function(err, user){
+                  if (err || !user){
+                    ele.user = 'no-user';
+                    return cb(null, ele);
+                  }
+                  ele.user = user.user;
+                  return cb(null, ele);
+                });
+              },
+              function(err, resArr){
+                qs['responses'] = resArr;
+                return cb(null, qs);
+              });
+          });
+        });
       });
     });
   });
@@ -61,12 +92,21 @@ exports.saveQuestion = function(db, questOpt, cb){
   });
 };
 
+exports.saveAnswer = function(db, questOpt, cb){
+  db.collection('answers', function(err, coll){
+    if (err) {
+      return cb(err);
+    }
+    coll.insert(questOpt, cb);
+  });
+};
+
 exports.getQuestions = function(db, cb){
   db.collection('questions', function(err, coll){
     if (err) {
       return cb(err);
     }
-    coll.find({},['title', 'subtitle', 'id'], function(err, qs){
+    coll.find({},['title', 'subtitle', '_id'], function(err, qs){
       if (err) {
         return cb(err);
       }
