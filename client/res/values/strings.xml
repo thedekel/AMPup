@@ -1,13 +1,14 @@
 <resources>
 
     <string name="app_name">AMPup</string>
-    <string name="title_section3">Nothing</string>
+    <string name="title_section3">About Us</string>
     <string name="title_section2">Practice</string>
     <string name="title_section1">Lessons</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_amp">AMPActivity</string>
     <string name="title_activity_login">Login</string>
+    <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_lesson">LessonActivity</string>
 
 </resources>

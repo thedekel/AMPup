@@ -23,13 +23,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class AMPActivity extends FragmentActivity implements
     ActionBar.TabListener {
@@ -125,11 +123,7 @@ public class AMPActivity extends FragmentActivity implements
         case 1:
           return new MediaSectionFragment();
         case 2:
-          Fragment dummy = new DummySectionFragment();
-          Bundle args = new Bundle();
-          args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 3);
-          dummy.setArguments(args);
-          return dummy;
+          return new AboutUsFragment();
       }
       return null;
     }
@@ -174,26 +168,6 @@ public class AMPActivity extends FragmentActivity implements
     }
   }
 
-  /**
-   * A dummy fragment representing a section of the app, but that simply
-   * displays dummy text.
-   */
-  public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {}
-
-    public static final String ARG_SECTION_NUMBER = "section_number";
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-      TextView textView = new TextView(getActivity());
-      textView.setGravity(Gravity.CENTER);
-      Bundle args = getArguments();
-      textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
-      return textView;
-    }
-  }
-
   public void onFirstRun() {
     AssetManager am = this.getAssets();
     AssetFileDescriptor afd = null;
@@ -229,17 +203,11 @@ public class AMPActivity extends FragmentActivity implements
     }
   }
 
-  public void onTabReselected(Tab tab, FragmentTransaction ft) {
-    // TODO Auto-generated method stub
-
-  }
+  public void onTabReselected(Tab tab, FragmentTransaction ft) {}
 
   public void onTabSelected(Tab tab, FragmentTransaction ft) {
     mViewPager.setCurrentItem(tab.getPosition());
   }
 
-  public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-    // TODO Auto-generated method stub
-
-  }
+  public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 }
