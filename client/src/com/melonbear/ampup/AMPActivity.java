@@ -35,13 +35,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class AMPActivity extends FragmentActivity {
 
@@ -149,7 +147,8 @@ public class AMPActivity extends FragmentActivity {
           List<Lesson> result = null;
           HttpClient client = new DefaultHttpClient();
           try {
-            HttpResponse res = client.execute(new HttpGet("http://192.168.43.85:3000/lessons"));
+            HttpResponse res = client.execute(new HttpGet(
+                "http://192.168.43.85:3000/lessons"));
             StatusLine statusLine = res.getStatusLine();
             int status = statusLine.getStatusCode();
             if (status == HttpStatus.SC_OK) {
@@ -187,8 +186,8 @@ public class AMPActivity extends FragmentActivity {
 
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
       Log.i("Response", dekel.toString());
-      JSONArray resultArray = dekel.has("result_array") ?
-          dekel.getJSONArray("result_array") : null;
+      JSONArray resultArray = dekel.has("result_array") ? dekel
+          .getJSONArray("result_array") : null;
       List<Lesson> result = new ArrayList<Lesson>();
       for (int i = 0; i < resultArray.length(); i++) {
         JSONObject arr = (JSONObject) resultArray.get(i);
@@ -203,26 +202,6 @@ public class AMPActivity extends FragmentActivity {
         Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.list_view, null);
       return v;
-    }
-  }
-
-  /**
-   * A dummy fragment representing a section of the app, but that simply
-   * displays dummy text.
-   */
-  public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {}
-
-    public static final String ARG_SECTION_NUMBER = "section_number";
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
-      TextView textView = new TextView(getActivity());
-      textView.setGravity(Gravity.CENTER);
-      Bundle args = getArguments();
-      textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
-      return textView;
     }
   }
 
@@ -252,7 +231,7 @@ public class AMPActivity extends FragmentActivity {
     try {
       inChannel.transferTo(0, inChannel.size(), outChannel);
     } finally {
-      if (inChannel != null){
+      if (inChannel != null) {
         inChannel.close();
       }
       if (outChannel != null) {
