@@ -16,6 +16,7 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,7 +39,7 @@ public class LoginActivity extends Activity {
 
     setContentView(R.layout.activity_login);
 
-    SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
     if (preferences.getBoolean("FirstRun", true)) {
       Log.i("tag", "This is the first run");
       new FirstRunTask().execute(this);
@@ -60,7 +61,6 @@ public class LoginActivity extends Activity {
       }
     };
     submitButton.setOnClickListener(clicker);
-
   }
 
   private class FirstRunTask extends AsyncTask<Object, Integer, Void> {
