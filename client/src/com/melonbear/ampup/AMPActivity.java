@@ -153,8 +153,7 @@ public class AMPActivity extends FragmentActivity {
           List<Lesson> result = null;
           HttpClient client = new DefaultHttpClient();
           try {
-            HttpResponse res = client.execute(new HttpGet(
-                "http://192.168.43.85:3000/lessons"));
+            HttpResponse res = client.execute(new HttpGet("http://192.168.43.85:3000/lessons"));
             StatusLine statusLine = res.getStatusLine();
             int status = statusLine.getStatusCode();
             if (status == HttpStatus.SC_OK) {
@@ -192,8 +191,8 @@ public class AMPActivity extends FragmentActivity {
 
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
       Log.i("Response", dekel.toString());
-      JSONArray resultArray = dekel.has("result_array") ? dekel
-          .getJSONArray("result_array") : null;
+      JSONArray resultArray = dekel.has("result_array") ?
+          dekel.getJSONArray("result_array") : null;
       List<Lesson> result = new ArrayList<Lesson>();
       for (int i = 0; i < resultArray.length(); i++) {
         JSONObject arr = (JSONObject) resultArray.get(i);
