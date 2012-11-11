@@ -170,6 +170,8 @@ public class AMPActivity extends FragmentActivity implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.list_view, null);
+      // In lieu of making custom layout. Just create custom padding here
+      v.setPadding(15,15,15,15);
       return v;
     }
   }

@@ -1,20 +1,21 @@
 package com.melonbear.ampup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LessonAdapter extends BaseAdapter {
-  private Context mContext;
+  private LayoutInflater mInflater;
   private List<Lesson> mLessons;
 
   public LessonAdapter(Context context, List<Lesson> lessons) {
-    mContext = context;
+    mInflater = LayoutInflater.from(context);
     mLessons = lessons == null ? new ArrayList<Lesson>() : lessons;
   }
 
@@ -31,9 +32,12 @@ public class LessonAdapter extends BaseAdapter {
   }
 
   public View getView(int position, View convertView, ViewGroup parent) {
-    TextView tv;
-    tv = convertView != null ? (TextView) convertView : new TextView(mContext);
+    View v;
+    v = convertView != null ? convertView : mInflater.inflate(R.layout.lesson_list_item, null);
+    TextView tv = (TextView) v.findViewById(R.id.lesson_title);
     tv.setText(getItem(position).toString());
-    return tv;
+    
+    ((TextView) v.findViewById(R.id.lesson_subtitle)).setText("Test");
+    return v;
   }
 }
