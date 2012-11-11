@@ -25,7 +25,7 @@ public class LessonActivity extends FragmentActivity {
   private Lesson lesson;
 
   private ImageView image;
-  private Button submitRecording, addComment, moreComments;
+  private Button addComment, moreComments;
   private LayoutInflater inflater;
 
   private final static int AUDIO_RECORD = 0;
