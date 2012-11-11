@@ -42,7 +42,6 @@ exports.getSession = function(db, user_name, cb){
   });
 };
 
-
 exports.getQuestion = function(db, qid, cb){
   db.collection('questions', function(err, coll){
     if (err) {
@@ -64,12 +63,18 @@ exports.getQuestion = function(db, qid, cb){
             async.map(arr, 
               function(ele, cb){
                 exports.getUser(db, ele.session, function(err, user){
-                  if (err || !user){
-                    ele.user = 'no-user';
-                    return cb(null, ele);
-                  }
-                  ele.user = user.user;
-                  return cb(null, ele);
+                  db.collection('comments', function(err, comm){
+                    comm.count({response:ele._id}, function(err, count){
+                      if (err || !user){
+                        ele.comments = count;
+                        ele.user = 'no-user';
+                        return cb(null, ele);
+                      }
+                      ele.comments = count;
+                      ele.user = user.user;
+                      return cb(null, ele);
+                    });
+                  });
                 });
               },
               function(err, resArr){
@@ -82,6 +87,29 @@ exports.getQuestion = function(db, qid, cb){
     });
   });
 };
+
+exports.getComments = function(db, response, cb){
+  db.collection('comments', function(err, comm){
+    comm.find({response:new ObjectID(response)}, function(err, comCur){
+      comCur.toArray(function(err, arr){
+        if (err){
+          return cb(err);
+        }
+        return cb(null, arr);
+      });
+    });
+  });
+};
+
+exports.saveComment = function(db, questOpt, cb){
+  db.collection('comments', function(err, coll){
+    if (err) {
+      return cb(err);
+    }
+    coll.insert(questOpt, cb);
+  });
+};
+
 
 exports.saveQuestion = function(db, questOpt, cb){
   db.collection('questions', function(err, coll){

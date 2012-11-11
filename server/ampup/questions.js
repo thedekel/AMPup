@@ -27,7 +27,19 @@ exports.show = function(req, res){
     return res.end();
   });
 };
+exports.showResComs = function(req, res){
+  console.log(req.params || 'no params');
+  mon.getComments(req.mydb, req.params['rid'] ,function(err, qs){
+    if (err){
+      res.writeHead(500);
+      return res.end(JSON.stringify({'error':500}));
+    }
+    res.writeHead(200);
+    res.write(JSON.stringify(qs));
+    return res.end();
+  });
 
+};
 exports.new = function(req, res){
   console.log(req.params || 'no params');
   console.log(req.body || 'nobody knows');
@@ -88,5 +100,23 @@ exports.newAnswer = function(req, res){
     res.writeHead(200);
     res.write("ok");
     res.end();
+  });
+};
+
+exports.newComment = function(req, res){
+  console.log(req.params || 'no params');
+  console.log(req.body || 'nobody knows');
+  console.log(req.files || 'no files');
+  req.body['question'] = new ObjectID(req.params['id']);
+  req.body['response'] = new ObjectID(req.params['rid']);
+  mon.saveComment(req.mydb, req.body, function(err){
+    if (err){
+      res.writeHead(500);
+      return res.end(JSON.stringify({'error':500}));
+    }
+    res.writeHead(200);
+    res.write("ok");
+    res.end();
+
   });
 };

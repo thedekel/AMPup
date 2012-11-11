@@ -32,17 +32,12 @@
         </activity>
         <activity
             android:name=".AMPActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_amp" >
         </activity>
         <activity
             android:name=".PostingActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_posting" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".SubmitActivity"

@@ -36,10 +36,12 @@ app.configure('development', function(){
 //app.get('/', routes.index);
 app.get('/lessons', questions.list);
 app.get('/lessons/:id', questions.show);
+app.get('/lessons/:id/:rid', questions.showResComs);
 
 app.post('/sessions', login.new);
 app.post('/lessons', questions.new);
 app.post('/lessons/:id', questions.newAnswer);
+app.post('/lessons/:id/:rid', questions.newAnswer);
 
 
 http.createServer(app).listen(app.get('port'), function(){
