@@ -103,6 +103,19 @@ public class AMPActivity extends FragmentActivity {
     public int getCount() {
       return 3;
     }
+    
+    @Override
+    public CharSequence getPageTitle(int position) {
+      switch (position) {
+      case 0:
+        return getString(R.string.title_section1).toUpperCase();
+      case 1:
+        return getString(R.string.title_section2).toUpperCase();
+      case 2:
+        return getString(R.string.title_section3).toUpperCase();
+      }
+      return null;
+    }
   }
 
   public static class ListSectionFragment extends ListFragment {
@@ -135,13 +148,10 @@ public class AMPActivity extends FragmentActivity {
             }
             
           } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           }
           return result;
@@ -158,7 +168,7 @@ public class AMPActivity extends FragmentActivity {
       }.execute();
     }
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
-      Log.i(";;;", dekel.toString());
+      Log.i("Response", dekel.toString());
       JSONArray resultArray = dekel.has("result_array") 
           ? dekel.getJSONArray("result_array")  : null; 
       List<Lesson> result = new ArrayList<Lesson>();
@@ -174,24 +184,10 @@ public class AMPActivity extends FragmentActivity {
         Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.list_view,  null);
       return v;
-      //View v = inflater.inflate(R.layout.list_view, null);
-      //return v;
     }
 
     public int getCount() {
       return 3;
-    }
-
-    public CharSequence getPageTitle(int position) {
-      switch (position) {
-      case 0:
-        return getString(R.string.title_section1).toUpperCase();
-      case 1:
-        return getString(R.string.title_section2).toUpperCase();
-      case 2:
-        return getString(R.string.title_section3).toUpperCase();
-      }
-      return null;
     }
   }
 
