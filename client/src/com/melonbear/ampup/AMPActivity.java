@@ -192,8 +192,8 @@ public class AMPActivity extends FragmentActivity {
 
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
       Log.i("Response", dekel.toString());
-      JSONArray resultArray = dekel.has("result_array") ? 
-          dekel.getJSONArray("result_array") : null;
+      JSONArray resultArray = dekel.has("result_array") ? dekel
+          .getJSONArray("result_array") : null;
       List<Lesson> result = new ArrayList<Lesson>();
       for (int i = 0; i < resultArray.length(); i++) {
         JSONObject arr = (JSONObject) resultArray.get(i);
