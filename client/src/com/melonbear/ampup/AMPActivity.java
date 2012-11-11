@@ -105,16 +105,16 @@ public class AMPActivity extends FragmentActivity {
     @Override
     public Fragment getItem(int i) {
       switch (i) {
-      case 0:
-        return new ListSectionFragment();
-      case 1:
-        return new MediaSectionFragment();
-      case 2:
-        Fragment dummy = new DummySectionFragment();
-        Bundle args = new Bundle();
-        args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 3);
-        dummy.setArguments(args);
-        return dummy;
+        case 0:
+          return new ListSectionFragment();
+        case 1:
+          return new MediaSectionFragment();
+        case 2:
+          Fragment dummy = new DummySectionFragment();
+          Bundle args = new Bundle();
+          args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, 3);
+          dummy.setArguments(args);
+          return dummy;
       }
       return null;
     }
@@ -127,12 +127,12 @@ public class AMPActivity extends FragmentActivity {
     @Override
     public CharSequence getPageTitle(int position) {
       switch (position) {
-      case 0:
-        return getString(R.string.title_section1).toUpperCase();
-      case 1:
-        return getString(R.string.title_section2).toUpperCase();
-      case 2:
-        return getString(R.string.title_section3).toUpperCase();
+        case 0:
+          return getString(R.string.title_section1).toUpperCase();
+        case 1:
+          return getString(R.string.title_section2).toUpperCase();
+        case 2:
+          return getString(R.string.title_section3).toUpperCase();
       }
       return null;
     }
@@ -141,8 +141,7 @@ public class AMPActivity extends FragmentActivity {
   public static class ListSectionFragment extends ListFragment {
     private ListView mList;
 
-    public ListSectionFragment() {
-    }
+    public ListSectionFragment() {}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -193,8 +192,8 @@ public class AMPActivity extends FragmentActivity {
 
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
       Log.i("Response", dekel.toString());
-      JSONArray resultArray = dekel.has("result_array") ? dekel
-          .getJSONArray("result_array") : null;
+      JSONArray resultArray = dekel.has("result_array") ? 
+          dekel.getJSONArray("result_array") : null;
       List<Lesson> result = new ArrayList<Lesson>();
       for (int i = 0; i < resultArray.length(); i++) {
         JSONObject arr = (JSONObject) resultArray.get(i);
@@ -217,8 +216,7 @@ public class AMPActivity extends FragmentActivity {
    * displays dummy text.
    */
   public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {
-    }
+    public DummySectionFragment() {}
 
     public static final String ARG_SECTION_NUMBER = "section_number";
 
