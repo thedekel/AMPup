@@ -55,6 +55,9 @@ public class MediaSectionFragment extends Fragment {
   private MediaPlayer mPlayerMetronome = null;
   private String username = null;
 
+  private static int TIMER_DURATION = 3050;
+  private static int TIMER_CALLBACK_INTERVAL = 1000;
+
   private void onRecord(boolean start) {
     if (start) {
       startRecording();
@@ -206,7 +209,8 @@ public class MediaSectionFragment extends Fragment {
   class PlayMetronomeButton extends Button {
     boolean mStartPlayingMetronome = true;
 
-    CountDownTimer timer = new CountDownTimer(3050, 1000) {
+    CountDownTimer timer = new CountDownTimer(TIMER_DURATION,
+        TIMER_CALLBACK_INTERVAL) {
 
       @Override
       public void onTick(long arg0) {
@@ -254,6 +258,7 @@ public class MediaSectionFragment extends Fragment {
     Log.i("tag", mFileName);
   }
 
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
 
