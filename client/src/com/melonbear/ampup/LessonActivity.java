@@ -48,6 +48,8 @@ public class LessonActivity extends FragmentActivity {
 		TextView description = (TextView) findViewById(R.id.description);
 
 		lesson = new Lesson("LESSON 4", "FINDING YOUR PASSION", "Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting ");
+		
+		setTitle(lesson.title);
 
 		title.setText(lesson.title);
 		subtitle.setText(lesson.subtitle);
@@ -107,6 +109,4 @@ public class LessonActivity extends FragmentActivity {
 		line.setBackgroundColor(0xFFCCCCCC);
 		commentsHolder.addView(line, new LayoutParams(LayoutParams.MATCH_PARENT, 1));
 	}
-
-
 }
