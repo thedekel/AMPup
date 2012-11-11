@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,94 +22,119 @@ import android.widget.TextView;
 
 public class LessonActivity extends FragmentActivity {
 
-	private Lesson lesson;
+  private Lesson lesson;
 
-	private ImageView image;
-	private Button submitRecording, addComment, moreComments;
-	private LayoutInflater inflater;
+  private ImageView image;
+  private Button submitRecording, addComment, moreComments;
+  private LayoutInflater inflater;
 
-	// number of hours between refreshing data
-	private static final long REFRESH_INTERVAL = 2;
+  // number of hours between refreshing data
+  private static final long REFRESH_INTERVAL = 2;
 
-	private final int MAX_COMMENTS = 4;
+  private final int MAX_COMMENTS = 4;
 
-	private Uri imageUri;
-	private final int GET_RECORDING = 0;
+  private Uri imageUri;
+  private final int GET_RECORDING = 0;
 
-	private SharedPreferences totalComments;
-	private SharedPreferences lastSpaceRefresh;
+  private SharedPreferences totalComments;
+  private SharedPreferences lastSpaceRefresh;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_lesson );
-		
-		inflater = getLayoutInflater();
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_lesson);
 
-		TextView title = (TextView) findViewById(R.id.title);
-		TextView subtitle = (TextView) findViewById(R.id.subtitle);
-		TextView description = (TextView) findViewById(R.id.description);
+    inflater = getLayoutInflater();
 
-		lesson = new Lesson("LESSON 4", "FINDING YOUR PASSION", "Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting ");
-		
-		setTitle(lesson.title);
+    TextView title = (TextView) findViewById(R.id.title);
+    TextView subtitle = (TextView) findViewById(R.id.subtitle);
+    TextView description = (TextView) findViewById(R.id.description);
 
-		title.setText(lesson.title);
-		subtitle.setText(lesson.subtitle);
-		description.setText(lesson.description);
-		
-		moreComments = (Button) findViewById(R.id.more_comments);
-		addComment = (Button) findViewById(R.id.add_comment);
-		loadComments();
+    lesson = new Lesson(
+        "LESSON 4",
+        "FINDING YOUR PASSION",
+        "Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting ");
 
-	}
+    setTitle(lesson.title);
 
-	private void loadComments() {
-		
-		List<Comment> comments = getComments();
+    title.setText(lesson.title);
+    subtitle.setText(lesson.subtitle);
+    description.setText(lesson.description);
 
-		LinearLayout holder = (LinearLayout) findViewById(R.id.comments);
-		holder.removeViews(1, holder.getChildCount() - 1);
+    moreComments = (Button) findViewById(R.id.more_comments);
+    addComment = (Button) findViewById(R.id.add_comment);
+    loadComments();
 
-		moreComments.setVisibility(comments.size() > MAX_COMMENTS ? View.VISIBLE : View.GONE);
-		findViewById(R.id.empty).setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+    Button postButton = (Button) findViewById(R.id.submit_recording);
+    postButton.setOnClickListener(new OnClickListener() {
 
+      public void onClick(View v) {
+        Intent intent = new Intent(LessonActivity.this, PostingActivity.class);
+        intent.putExtra("name", lesson.title);
+        startActivityForResult(intent, 0);
+      }
+    });
+  }
 
-		for (Comment comment: comments) {
-			addComment(comment);
-		}
-	}
-	
+  private void loadComments() {
 
-	private List<Comment> getComments() {
-		List<Comment> comments = new ArrayList<Comment>();
-		for (int i = 0; i < 4; i++) {
-			Comment comment = new Comment();
-			comment.comment = "This is a comment!";
-			comment.user = "Jackie Chan";
-			comments.add(comment);
-		}
-		return comments;
-	}
+    List<Comment> comments = getComments();
 
-	private void addComment(Comment comment) {
-		LinearLayout commentsHolder = (LinearLayout) findViewById(R.id.comments);
-		View v = inflater.inflate(R.layout.comment_item, null);
+    LinearLayout holder = (LinearLayout) findViewById(R.id.comments);
+    holder.removeViews(1, holder.getChildCount() - 1);
 
-		TextView c = (TextView) v.findViewById(R.id.comment);
-		c.setText(comment.comment);
+    moreComments.setVisibility(comments.size() > MAX_COMMENTS ? View.VISIBLE
+        : View.GONE);
+    findViewById(R.id.empty).setVisibility(
+        comments.size() > 0 ? View.GONE : View.VISIBLE);
 
-		TextView u = (TextView) v.findViewById(R.id.user);
-		SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
-		u.setText("by " + comment.user + " on " + format.format(new Date(comment.dateInMilliseconds)));
+    for (Comment comment : comments) {
+      addComment(comment);
+    }
+  }
 
-		ImageView avatar = (ImageView) v.findViewById(R.id.avatar);
-		//avatarLoader.DisplayImage(comment.avatar, avatar);
+  private List<Comment> getComments() {
+    List<Comment> comments = new ArrayList<Comment>();
+    for (int i = 0; i < 4; i++) {
+      Comment comment = new Comment();
+      comment.comment = "This is a comment!";
+      comment.user = "Jackie Chan";
+      comments.add(comment);
+    }
+    return comments;
+  }
 
-		commentsHolder.addView(v);
+  private void addComment(Comment comment) {
+    LinearLayout commentsHolder = (LinearLayout) findViewById(R.id.comments);
+    View v = inflater.inflate(R.layout.comment_item, null);
 
-		LinearLayout line = new LinearLayout(this);
-		line.setBackgroundColor(0xFFCCCCCC);
-		commentsHolder.addView(line, new LayoutParams(LayoutParams.MATCH_PARENT, 1));
-	}
+    TextView c = (TextView) v.findViewById(R.id.comment);
+    c.setText(comment.comment);
+
+    TextView u = (TextView) v.findViewById(R.id.user);
+    SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
+    u.setText("by " + comment.user + " on "
+        + format.format(new Date(comment.dateInMilliseconds)));
+
+    ImageView avatar = (ImageView) v.findViewById(R.id.avatar);
+    // avatarLoader.DisplayImage(comment.avatar, avatar);
+
+    commentsHolder.addView(v);
+
+    LinearLayout line = new LinearLayout(this);
+    line.setBackgroundColor(0xFFCCCCCC);
+    commentsHolder
+        .addView(line, new LayoutParams(LayoutParams.MATCH_PARENT, 1));
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int result, Intent data) {
+
+    super.onActivityResult(requestCode, result, data);
+    if (result == RESULT_OK) {
+      // JARVIS ADD YOUR SHIT HERE. FILE NAME IS:
+      String filename = data.getStringExtra("filename");
+      Log.i("tag", filename);
+    }
+  }
 }
