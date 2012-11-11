@@ -64,15 +64,17 @@ exports.getQuestion = function(db, qid, cb){
               function(ele, cb){
                 exports.getUser(db, ele.session, function(err, user){
                   db.collection('comments', function(err, comm){
-                    comm.count({response:ele._id}, function(err, count){
-                      if (err || !user){
-                        ele.comments = count;
-                        ele.user = 'no-user';
+                    comm.find({response:ele._id}, function(err, comCur){
+                      comCur.toArray(function(err, comArr){
+                        if (err || !user){
+                          ele.comments = comArr;
+                          ele.user = 'no-user';
+                          return cb(null, ele);
+                        }
+                        ele.comments = comArr;
+                        ele.user = user.user;
                         return cb(null, ele);
-                      }
-                      ele.comments = count;
-                      ele.user = user.user;
-                      return cb(null, ele);
+                      });
                     });
                   });
                 });
@@ -134,7 +136,7 @@ exports.getQuestions = function(db, cb){
     if (err) {
       return cb(err);
     }
-    coll.find({},['title', 'subtitle', '_id'], function(err, qs){
+    coll.find({},['title', 'subtitle', 'description', '_id'], function(err, qs){
       if (err) {
         return cb(err);
       }

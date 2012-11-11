@@ -46,10 +46,10 @@ exports.new = function(req, res){
   console.log(req.files || 'no files');
   var image_path = "";
   if (req.files['image']){
-    image_path = '/public/images/' +
-      req.body.title.replace(/ /g,'_') + '_image.jpg';
+    image_path = '/images/' +
+      req.body.title.replace(/[ #\?\&]/g,'_') + '_image.jpg';
     fs.readFile(req.files['image'].path, function(err, data){
-      fs.writeFile( __dirname + image_path, data, function(err){
+      fs.writeFile( __dirname + '/public' + image_path, data, function(err){
         console.log('file saved');
       });
     });
@@ -73,19 +73,19 @@ exports.newAnswer = function(req, res){
   req.body['question'] = new ObjectID(req.params['id']);
   var image_path = "", audio_path = '';
   if (req.files['image']){
-    image_path = '/public/images/' +
+    image_path = '/images/' +
       req.body.question + '_' +  req.body.session + '_image.jpg';
     fs.readFile(req.files['image'].path, function(err, data){
-      fs.writeFile( __dirname + image_path, data, function(err){
+      fs.writeFile( __dirname + "/public" + image_path, data, function(err){
         console.log('file saved');
       });
     });
   }
   if (req.files['audio']){
-    audio_path = '/public/audio/' +
+    audio_path = '/audio/' +
       req.body.question + '_' +  req.body.session + '_audio.3gp';
     fs.readFile(req.files['image'].path, function(err, data){
-      fs.writeFile( __dirname + audio_path, data, function(err){
+      fs.writeFile( __dirname + "/public" + audio_path, data, function(err){
         console.log('file saved');
       });
     });

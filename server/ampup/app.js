@@ -33,7 +33,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-//app.get('/', routes.index);
+//app.get('/', routes.index)
 app.get('/lessons', questions.list);
 app.get('/lessons/:id', questions.show);
 app.get('/lessons/:id/:rid', questions.showResComs);
