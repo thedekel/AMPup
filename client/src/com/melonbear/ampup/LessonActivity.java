@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +26,8 @@ public class LessonActivity extends FragmentActivity {
 	private ImageView image;
 	private Button submitRecording, addComment, moreComments;
 	private LayoutInflater inflater;
+	
+	private final static int AUDIO_RECORD = 0;
 
 	// number of hours between refreshing data
 	private static final long REFRESH_INTERVAL = 2;
@@ -57,7 +61,23 @@ public class LessonActivity extends FragmentActivity {
 		
 		moreComments = (Button) findViewById(R.id.more_comments);
 		addComment = (Button) findViewById(R.id.add_comment);
+		
+		
+		Button record = (Button) findViewById(R.id.submit_recording);
+			record.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LessonActivity.this, LessonActivity.class);
+				intent.putExtra("id", lesson.id);
+				intent.putExtra("name", lesson.title);
+				startActivityForResult(intent, AUDIO_RECORD);
+			}
+		});
+		
 		loadComments();
+		
+		
 
 	}
 
@@ -77,7 +97,6 @@ public class LessonActivity extends FragmentActivity {
 		}
 	}
 	
-
 	private List<Comment> getComments() {
 		List<Comment> comments = new ArrayList<Comment>();
 		for (int i = 0; i < 4; i++) {
@@ -86,6 +105,7 @@ public class LessonActivity extends FragmentActivity {
 			comment.user = "Jackie Chan";
 			comments.add(comment);
 		}
+		
 		return comments;
 	}
 
