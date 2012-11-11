@@ -185,10 +185,6 @@ public class AMPActivity extends FragmentActivity {
       View v = inflater.inflate(R.layout.list_view,  null);
       return v;
     }
-
-    public int getCount() {
-      return 3;
-    }
   }
 
   /**
