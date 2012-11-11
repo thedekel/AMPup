@@ -10,6 +10,7 @@ public class LessonActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_lesson);
     TextView tv = (TextView) findViewById(R.id.text);
-    tv.setText("FUUU");
+    Bundle b = getIntent().getExtras();
+    tv.setText(b.getCharSequence("lesson"));
   }
 }
