@@ -1,7 +1,12 @@
 package com.melonbear.ampup;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +21,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -54,6 +64,16 @@ public class AMPActivity extends FragmentActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_amp);
+
+    SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+    if (preferences.getBoolean("FirstRun", true)) {
+      Log.i("tag", "This is the first run");
+      onFirstRun();
+      Editor editor = preferences.edit();
+      editor.putBoolean("FirstRun", false);
+      editor.commit();
+    }
+
     // Create the adapter that will return a fragment for each of the three
     // primary sections
     // of the app.
@@ -103,16 +123,16 @@ public class AMPActivity extends FragmentActivity {
     public int getCount() {
       return 3;
     }
-    
+
     @Override
     public CharSequence getPageTitle(int position) {
       switch (position) {
-      case 0:
-        return getString(R.string.title_section1).toUpperCase();
-      case 1:
-        return getString(R.string.title_section2).toUpperCase();
-      case 2:
-        return getString(R.string.title_section3).toUpperCase();
+        case 0:
+          return getString(R.string.title_section1).toUpperCase();
+        case 1:
+          return getString(R.string.title_section2).toUpperCase();
+        case 2:
+          return getString(R.string.title_section3).toUpperCase();
       }
       return null;
     }
@@ -120,6 +140,7 @@ public class AMPActivity extends FragmentActivity {
 
   public static class ListSectionFragment extends ListFragment {
     private ListView mList;
+
     public ListSectionFragment() {}
 
     @Override
@@ -146,7 +167,7 @@ public class AMPActivity extends FragmentActivity {
               res.getEntity().getContent().close();
               throw new IOException(statusLine.getReasonPhrase());
             }
-            
+
           } catch (ClientProtocolException e) {
             e.printStackTrace();
           } catch (IOException e) {
@@ -156,7 +177,7 @@ public class AMPActivity extends FragmentActivity {
           }
           return result;
         }
-        
+
         @Override
         protected void onPostExecute(List<Lesson> lessons) {
           if (mList != null) {
@@ -164,13 +185,14 @@ public class AMPActivity extends FragmentActivity {
             mList.setAdapter(adapter);
           }
         }
-        
+
       }.execute();
     }
+
     private List<Lesson> jsonToList(JSONObject dekel) throws JSONException {
       Log.i("Response", dekel.toString());
-      JSONArray resultArray = dekel.has("result_array") 
-          ? dekel.getJSONArray("result_array")  : null; 
+      JSONArray resultArray = dekel.has("result_array") ?
+          dekel.getJSONArray("result_array") : null;
       List<Lesson> result = new ArrayList<Lesson>();
       for (int i = 0; i < resultArray.length(); i++) {
         JSONObject arr = (JSONObject) resultArray.get(i);
@@ -179,10 +201,11 @@ public class AMPActivity extends FragmentActivity {
       }
       return result;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-      View v = inflater.inflate(R.layout.list_view,  null);
+      View v = inflater.inflate(R.layout.list_view, null);
       return v;
     }
   }
@@ -204,6 +227,41 @@ public class AMPActivity extends FragmentActivity {
       Bundle args = getArguments();
       textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
       return textView;
+    }
+  }
+
+  public void onFirstRun() {
+    AssetManager am = this.getAssets();
+    AssetFileDescriptor afd = null;
+    try {
+      afd = am.openFd("metronome120bpm.mp3");
+
+      // Create new file to copy into.
+      File file = new File(Environment.getExternalStorageDirectory()
+          + java.io.File.separator + "metronome120bpm.mp3");
+      file.createNewFile();
+
+      copyFdToFile(afd.getFileDescriptor(), file);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @SuppressWarnings("resource")
+  public static void copyFdToFile(FileDescriptor src, File dst)
+      throws IOException {
+    FileChannel inChannel = new FileInputStream(src).getChannel();
+    FileChannel outChannel = new FileOutputStream(dst).getChannel();
+    try {
+      inChannel.transferTo(0, inChannel.size(), outChannel);
+    } finally {
+      if (inChannel != null){
+        inChannel.close();
+      }
+      if (outChannel != null) {
+        outChannel.close();
+      }
     }
   }
 }

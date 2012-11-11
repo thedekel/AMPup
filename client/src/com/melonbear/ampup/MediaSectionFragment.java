@@ -25,6 +25,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -50,7 +51,12 @@ public class MediaSectionFragment extends Fragment {
   private PlayButton mPlayButton = null;
   private MediaPlayer mPlayer = null;
 
+  private PlayMetronomeButton mPlayMetronomeButton = null;
+  private MediaPlayer mPlayerMetronome = null;
   private String username = null;
+
+  private static int TIMER_DURATION = 3050;
+  private static int TIMER_CALLBACK_INTERVAL = 1000;
 
   private void onRecord(boolean start) {
     if (start) {
@@ -65,6 +71,14 @@ public class MediaSectionFragment extends Fragment {
       startPlaying();
     } else {
       stopPlaying();
+    }
+  }
+
+  private void onPlayMetronome(boolean start) {
+    if (start) {
+      startPlayingMetronome();
+    } else {
+      stopPlayingMetronome();
     }
   }
 
@@ -93,6 +107,35 @@ public class MediaSectionFragment extends Fragment {
   private void stopPlaying() {
     mPlayer.release();
     mPlayer = null;
+  }
+
+  private void stopPlayingMetronome() {
+    mPlayerMetronome.release();
+    mPlayerMetronome = null;
+  }
+
+  private void startPlayingMetronome() {
+    mPlayerMetronome = new MediaPlayer();
+    OnCompletionListener completionListener = new OnCompletionListener() {
+
+      public void onCompletion(MediaPlayer mp) {
+        mPlayMetronomeButton.setText("Start Playing");
+        Log.i(LOG_TAG, "Finished Playing");
+      }
+    };
+
+    mPlayerMetronome.setOnCompletionListener(completionListener);
+    try {
+      String metronomeFileName = Environment.getExternalStorageDirectory()
+          .getAbsolutePath();
+      metronomeFileName += "/metronome120bpm.mp3";
+
+      mPlayerMetronome.setDataSource(metronomeFileName);
+      mPlayerMetronome.prepare();
+      mPlayerMetronome.start();
+    } catch (IOException e) {
+      Log.e(LOG_TAG, "prepare() failed");
+    }
   }
 
   private void startRecording() {
@@ -163,15 +206,59 @@ public class MediaSectionFragment extends Fragment {
     }
   }
 
+  class PlayMetronomeButton extends Button {
+    boolean mStartPlayingMetronome = true;
+
+    CountDownTimer timer = new CountDownTimer(TIMER_DURATION,
+        TIMER_CALLBACK_INTERVAL) {
+
+      @Override
+      public void onTick(long arg0) {
+        Log.i("tag", Long.toString(arg0));
+        setText(Integer.toString(Math.round(Math.round(arg0 / 1000.0))));
+      }
+
+      @Override
+      public void onFinish() {
+        onPlayMetronome(mStartPlayingMetronome);
+        if (mStartPlayingMetronome) {
+          setText("Stop Metronome");
+        } else {
+          setText("Start Metronome");
+        }
+        mStartPlayingMetronome = !mStartPlayingMetronome;
+      }
+    };
+    OnClickListener clicker = new OnClickListener() {
+
+      public void onClick(View v) {
+        if (mStartPlayingMetronome) {
+          timer.start();
+        } else {
+          onPlayMetronome(mStartPlayingMetronome);
+          mStartPlayingMetronome = !mStartPlayingMetronome;
+          setText("MN");
+        }
+      }
+    };
+
+    public PlayMetronomeButton(Context ctx) {
+      super(ctx);
+      setText("MN");
+      setOnClickListener(clicker);
+    }
+  }
+
   public MediaSectionFragment() {
 
     mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
     String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-    // mFileName += "/audio.3gp";
-    mFileName += "/AMPup/" + this.username + "_" + timestamp + ".3gp";
-    Log.i(this.LOG_TAG, mFileName);
+
+    mFileName += "/" + this.username + "_" + timestamp + ".3gp";
+    Log.i("tag", mFileName);
   }
 
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
 
@@ -183,6 +270,10 @@ public class MediaSectionFragment extends Fragment {
         ViewGroup.LayoutParams.WRAP_CONTENT, 0));
     mPlayButton = new PlayButton(getActivity());
     ll.addView(mPlayButton, new LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+    mPlayMetronomeButton = new PlayMetronomeButton(getActivity());
+    ll.addView(mPlayMetronomeButton, new LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT,
         ViewGroup.LayoutParams.WRAP_CONTENT, 0));
     return ll;
@@ -201,4 +292,5 @@ public class MediaSectionFragment extends Fragment {
       mPlayer = null;
     }
   }
+
 }
