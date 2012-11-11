@@ -114,6 +114,17 @@ public class LessonActivity extends FragmentActivity {
     SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy");
     u.setText("by " + comment.user + " on "
         + format.format(new Date(comment.dateInMilliseconds)));
+    
+    final ImageView play = (ImageView) v.findViewById(R.id.play);
+    play.setOnClickListener(new OnClickListener() {
+		
+    	boolean paused = false;
+		@Override
+		public void onClick(View v) {
+			play.setImageResource(paused ? R.drawable.pause : R.drawable.play);
+			paused = !paused;
+		}
+	});
 
     ImageView avatar = (ImageView) v.findViewById(R.id.avatar);
     // avatarLoader.DisplayImage(comment.avatar, avatar);
