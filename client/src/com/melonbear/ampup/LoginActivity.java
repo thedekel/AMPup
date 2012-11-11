@@ -1,6 +1,7 @@
 package com.melonbear.ampup;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,10 +27,11 @@ public class LoginActivity extends Activity {
       public void onClick(View v) {
         Log.i("tag", "username: " + usernameEditText.getText().toString());
         Log.i("tag", "password: " + passwordEditText.getText().toString());
+        Intent myIntent = new Intent(getApplicationContext(), AMPActivity.class);
+        startActivity(myIntent);
       }
     };
     submitButton.setOnClickListener(clicker);
 
   }
-
 }
