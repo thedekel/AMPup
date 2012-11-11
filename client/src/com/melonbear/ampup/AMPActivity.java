@@ -248,11 +248,10 @@ public class AMPActivity extends FragmentActivity {
     }
   }
 
+  @SuppressWarnings("resource")
   public static void copyFdToFile(FileDescriptor src, File dst)
       throws IOException {
-    @SuppressWarnings("resource")
     FileChannel inChannel = new FileInputStream(src).getChannel();
-    @SuppressWarnings("resource")
     FileChannel outChannel = new FileOutputStream(dst).getChannel();
     try {
       inChannel.transferTo(0, inChannel.size(), outChannel);
