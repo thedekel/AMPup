@@ -17,14 +17,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
 
 public class AMPActivity extends FragmentActivity {
 
@@ -87,18 +87,20 @@ public class AMPActivity extends FragmentActivity {
 
     @Override
     public Fragment getItem(int i) {
-      Fragment fragment;
-
-      if (i == 1) {
-        fragment = new MediaSectionFragment();
-      } else {
-        fragment = new DummySectionFragment();
+      switch (i) {
+      case 0:
+        return new ListSectionFragment();
+      case 1:
+        return new MediaSectionFragment();
+      case 2:
+        Fragment dummy = new DummySectionFragment();
+        Bundle args = new Bundle();
+        args.putInt(ListSectionFragment.ARG_SECTION_NUMBER, i + 1);
+        dummy.setArguments(args);
+        return dummy;
       }
+      return null;
 
-      Bundle args = new Bundle();
-      args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-      fragment.setArguments(args);
-      return fragment;
     }
 
     @Override
@@ -124,21 +126,33 @@ public class AMPActivity extends FragmentActivity {
    * A dummy fragment representing a section of the app, but that simply
    * displays dummy text.
    */
-  public static class DummySectionFragment extends Fragment {
-    public DummySectionFragment() {
+  public static class ListSectionFragment extends ListFragment {
+    public ListSectionFragment() {
     }
 
     public static final String ARG_SECTION_NUMBER = "section_number";
 
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-      TextView textView = new TextView(getActivity());
-      textView.setGravity(Gravity.CENTER);
-      Bundle args = getArguments();
-      textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
-      return textView;
+      View v = inflater.inflate(R.layout.list_view, null);
+
+      String[] lessons = new String[10];
+
+      for (int i = 0; i < lessons.length; i++) {
+        lessons[i] = String.format("Lesson %d", i + 1);
+
+      }
+
+      setListAdapter(new ArrayAdapter<String>(getActivity(),
+          android.R.layout.simple_list_item_1, lessons));
+
+      return v;
     }
+  }
+
+  public static class DummySectionFragment extends ListFragment {
+    public DummySectionFragment() {
+    };
   }
 
   public void onFirstRun() {
