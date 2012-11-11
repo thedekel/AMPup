@@ -56,7 +56,6 @@ public class PostingActivity extends Activity {
 			
 			boolean mStartRecording;
 
-			@Override
 			public void onClick(View v) {
 				mStartRecording = !mStartRecording;
 				onRecord(mStartRecording);
