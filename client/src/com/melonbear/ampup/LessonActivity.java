@@ -28,6 +28,8 @@ public class LessonActivity extends FragmentActivity {
   private Button submitRecording, addComment, moreComments;
   private LayoutInflater inflater;
 
+  private final static int AUDIO_RECORD = 0;
+
   // number of hours between refreshing data
   private static final long REFRESH_INTERVAL = 2;
 
@@ -54,6 +56,26 @@ public class LessonActivity extends FragmentActivity {
         "LESSON 4",
         "FINDING YOUR PASSION",
         "Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting ");
+
+    title.setText(lesson.title);
+    subtitle.setText(lesson.subtitle);
+    description.setText(lesson.description);
+
+    moreComments = (Button) findViewById(R.id.more_comments);
+    addComment = (Button) findViewById(R.id.add_comment);
+
+    Button record = (Button) findViewById(R.id.submit_recording);
+    record.setOnClickListener(new OnClickListener() {
+
+      public void onClick(View v) {
+        Intent intent = new Intent(LessonActivity.this, LessonActivity.class);
+        intent.putExtra("id", lesson.id);
+        intent.putExtra("name", lesson.title);
+        startActivityForResult(intent, AUDIO_RECORD);
+      }
+    });
+
+    loadComments();
 
     setTitle(lesson.title);
 
