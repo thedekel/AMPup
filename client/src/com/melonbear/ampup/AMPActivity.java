@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetFileDescriptor;
@@ -165,6 +166,13 @@ public class AMPActivity extends FragmentActivity implements
         Bundle savedInstanceState) {
       View v = inflater.inflate(R.layout.list_view, null);
       return v;
+    }
+    
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+    	super.onListItemClick(l, v, position, id);
+    	Intent intent = new Intent(getActivity(), LessonActivity.class);
+    	startActivity(intent);
     }
   }
 
