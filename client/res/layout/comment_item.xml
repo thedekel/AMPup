@@ -8,6 +8,7 @@
         android:id="@+id/avatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:src="@drawable/profile_man"
         android:scaleType="centerCrop"
         android:layout_marginRight="16dip" />
         

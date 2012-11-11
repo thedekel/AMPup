@@ -24,318 +24,314 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class PostingActivity extends Activity {
-  int id;
-  String name;
+	int id;
+	String name;
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    id = getIntent().getIntExtra("id", 0);
-    name = getIntent().getStringExtra("name");
-    setContentView(R.layout.activity_posting);
-    LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
-    LinearLayout horizll = (LinearLayout) findViewById(R.id.horizll);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		id = getIntent().getIntExtra("id", 0);
+		name = getIntent().getStringExtra("name");
+		setContentView(R.layout.activity_posting);
+		LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
+		LinearLayout horizll = (LinearLayout) findViewById(R.id.horizll);
 
-    final TextView countdownTextView = (TextView) findViewById(R.id.textViewCountDown);
-    countdownTextView.setText("00:00");
-    countdownTextView.setGravity(Gravity.CENTER);
+		final TextView countdownTextView = (TextView) findViewById(R.id.textViewCountDown);
+		countdownTextView.setText("00:00");
+		countdownTextView.setGravity(Gravity.CENTER);
 
-    mPlayButton = new PlayButton(this);
-    mPlayButton.setEnabled(false);
-    horizll.addView(mPlayButton, new LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT, 0));
-    mRecordButton = new RecordButton(this);
-    ll.addView(mRecordButton, new LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT, 0));
-    mPlayMetronomeButton = new PlayMetronomeButton(this);
-    horizll.addView(mPlayMetronomeButton, new LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+		mPlayButton = new PlayButton(this);
 
-    mSubmitButton = new Button(this);
-    mSubmitButton.setText("Submit");
-    ll.addView(mSubmitButton);
 
-    OnClickListener onClick = new OnClickListener() {
 
-      public void onClick(View v) {
-        Intent intent = new Intent(PostingActivity.this, SubmitActivity.class);
-        intent.putExtra("id", id);
-        intent.putExtra("name", name);
-        startActivityForResult(intent, 0);
-      }
-    };
-    mSubmitButton.setOnClickListener(onClick);
 
-    mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-    String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+		mPlayButton.setEnabled(false);
+		horizll.addView(mPlayButton, new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT, 0));
 
-    mFileName += "/" + this.username + "_" + timestamp + ".3gp";
-    Log.i("tag", mFileName);
 
-    countDownTimer = new CountDownTimer(30 * 1000, 1000) {
+		mRecordButton = (Button) findViewById(R.id.record);
+		mRecordButton.setOnClickListener(new OnClickListener() {
+			
+			boolean mStartRecording;
 
-      @Override
-      public void onTick(long millisUntilFinished) {
-        countdownTextView.setText(":"
-            + Integer.toString((int) (millisUntilFinished / 1000.0)));
-      }
+			public void onClick(View v) {
+				mStartRecording = !mStartRecording;
+				onRecord(mStartRecording);
+				if (mStartRecording) {
+					mRecordButton.setText("Stop recording");
+				} else {
+					mRecordButton.setText("Start recording");
+				}
+			}
+		});
 
-      @Override
-      public void onFinish() {
-        countdownTextView.setText("0:0");
-      }
-    };
-  }
+		mPlayMetronomeButton = new PlayMetronomeButton(this);
+		horizll.addView(mPlayMetronomeButton, new LinearLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT, 0));
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.activity_posting, menu);
-    return true;
-  }
+		mSubmitButton = new Button(this);
+		mSubmitButton.setText("Submit");
+		ll.addView(mSubmitButton);
 
-  private static final String LOG_TAG = "AudioRecordTest";
+		OnClickListener onClick = new OnClickListener() {
 
-  private static String mFileName = null;
+			public void onClick(View v) {
+				Intent intent = new Intent(PostingActivity.this, SubmitActivity.class);
+				intent.putExtra("id", id);
+				intent.putExtra("name", name);
+				startActivityForResult(intent, 0);
+			}
+		};
+		mSubmitButton.setOnClickListener(onClick);
 
-  private RecordButton mRecordButton = null;
-  private MediaRecorder mRecorder = null;
+		mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+		String timestamp = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
 
-  private PlayButton mPlayButton = null;
-  private MediaPlayer mPlayer = null;
+		mFileName += "/" + this.username + "_" + timestamp + ".3gp";
+		Log.i("tag", mFileName);
 
-  private PlayMetronomeButton mPlayMetronomeButton = null;
-  private MediaPlayer mPlayerMetronome = null;
-  private String username = null;
+		countDownTimer = new CountDownTimer(30 * 1000, 1000) {
 
-  private static int TIMER_DURATION = 3050;
-  private static int TIMER_CALLBACK_INTERVAL = 1000;
+			@Override
+			public void onTick(long millisUntilFinished) {
+				countdownTextView.setText(":"
+						+ Integer.toString((int) (millisUntilFinished / 1000.0)));
+			}
 
-  private Button mSubmitButton;
+			@Override
+			public void onFinish() {
+				countdownTextView.setText("00:00");
+			}
+		};
+	}
 
-  private CountDownTimer countDownTimer;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_posting, menu);
+		return true;
+	}
 
-  private void onRecord(boolean start) {
-    if (start) {
-      startRecording();
-    } else {
-      stopRecording();
-    }
-  }
+	private static final String LOG_TAG = "AudioRecordTest";
 
-  private void onPlay(boolean start) {
-    if (start) {
-      startPlaying();
-    } else {
-      stopPlaying();
-    }
-  }
+	private static String mFileName = null;
 
-  private void onPlayMetronome(boolean start) {
-    if (start) {
-      startPlayingMetronome();
-    } else {
-      stopPlayingMetronome();
-    }
-  }
+	private Button mRecordButton = null;
+	private MediaRecorder mRecorder = null;
 
-  private void startPlaying() {
-    mPlayer = new MediaPlayer();
+	private PlayButton mPlayButton = null;
+	private MediaPlayer mPlayer = null;
 
-    OnCompletionListener completionListener = new OnCompletionListener() {
+	private PlayMetronomeButton mPlayMetronomeButton = null;
+	private MediaPlayer mPlayerMetronome = null;
+	private String username = null;
 
-      public void onCompletion(MediaPlayer mp) {
-        mPlayButton.setText("Start Playing");
-        mPlayButton.mStartPlaying = !mPlayButton.mStartPlaying;
-        Log.i(LOG_TAG, "Finished Playing");
-      }
-    };
+	private static int TIMER_DURATION = 3050;
+	private static int TIMER_CALLBACK_INTERVAL = 1000;
 
-    mPlayer.setOnCompletionListener(completionListener);
-    try {
-      mPlayer.setDataSource(mFileName);
-      mPlayer.prepare();
-      mPlayer.start();
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "prepare() failed");
-    }
-  }
+	private Button mSubmitButton;
 
-  private void stopPlaying() {
-    mPlayer.release();
-    mPlayer = null;
-  }
+	private CountDownTimer countDownTimer;
 
-  private void stopPlayingMetronome() {
-    mPlayerMetronome.release();
-    mPlayerMetronome = null;
-  }
+	private void onRecord(boolean start) {
+		if (start) {
+			startRecording();
+		} else {
+			stopRecording();
+		}
+	}
 
-  private void startPlayingMetronome() {
-    mPlayerMetronome = new MediaPlayer();
-    OnCompletionListener completionListener = new OnCompletionListener() {
+	private void onPlay(boolean start) {
+		if (start) {
+			startPlaying();
+		} else {
+			stopPlaying();
+		}
+	}
 
-      public void onCompletion(MediaPlayer mp) {
-        mPlayMetronomeButton.setText("Start Playing");
-        Log.i(LOG_TAG, "Finished Playing");
-      }
-    };
+	private void onPlayMetronome(boolean start) {
+		if (start) {
+			startPlayingMetronome();
+		} else {
+			stopPlayingMetronome();
+		}
+	}
 
-    mPlayerMetronome.setOnCompletionListener(completionListener);
-    try {
-      String metronomeFileName = Environment.getExternalStorageDirectory()
-          .getAbsolutePath();
-      metronomeFileName += "/metronome120bpm.mp3";
+	private void startPlaying() {
+		mPlayer = new MediaPlayer();
 
-      mPlayerMetronome.setDataSource(metronomeFileName);
-      mPlayerMetronome.prepare();
-      mPlayerMetronome.start();
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "prepare() failed");
-    }
-  }
+		OnCompletionListener completionListener = new OnCompletionListener() {
 
-  private void startRecording() {
+			public void onCompletion(MediaPlayer mp) {
+				mPlayButton.setText("Start Playing");
+				mPlayButton.mStartPlaying = !mPlayButton.mStartPlaying;
+				Log.i(LOG_TAG, "Finished Playing");
+			}
+		};
 
-    mRecorder = new MediaRecorder();
-    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-    mRecorder.setOutputFile(mFileName);
-    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		mPlayer.setOnCompletionListener(completionListener);
+		try {
+			mPlayer.setDataSource(mFileName);
+			mPlayer.prepare();
+			mPlayer.start();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "prepare() failed");
+		}
+	}
 
-    try {
-      mRecorder.prepare();
-    } catch (IOException e) {
-      Log.e(LOG_TAG, "prepare() failed");
-    }
+	private void stopPlaying() {
+		mPlayer.release();
+		mPlayer = null;
+	}
 
-    mRecorder.start();
-    countDownTimer.start();
+	private void stopPlayingMetronome() {
+		mPlayerMetronome.release();
+		mPlayerMetronome = null;
+	}
 
-  }
+	private void startPlayingMetronome() {
+		mPlayerMetronome = new MediaPlayer();
+		OnCompletionListener completionListener = new OnCompletionListener() {
 
-  private void stopRecording() {
-    mPlayButton.setEnabled(true);
-    mRecorder.stop();
-    mRecorder.release();
-    mRecorder = null;
-    countDownTimer.cancel();
-    countDownTimer.onFinish();
-  }
+			public void onCompletion(MediaPlayer mp) {
+				mPlayMetronomeButton.setText("Start Playing");
+				Log.i(LOG_TAG, "Finished Playing");
+			}
+		};
 
-  class RecordButton extends Button {
-    boolean mStartRecording = true;
+		mPlayerMetronome.setOnCompletionListener(completionListener);
+		try {
+			String metronomeFileName = Environment.getExternalStorageDirectory()
+					.getAbsolutePath();
+			metronomeFileName += "/metronome120bpm.mp3";
 
-    OnClickListener clicker = new OnClickListener() {
-      public void onClick(View v) {
-        onRecord(mStartRecording);
-        if (mStartRecording) {
-          setText("Stop recording");
-        } else {
-          setText("Start recording");
-        }
-        mStartRecording = !mStartRecording;
-      }
-    };
+			mPlayerMetronome.setDataSource(metronomeFileName);
+			mPlayerMetronome.prepare();
+			mPlayerMetronome.start();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "prepare() failed");
+		}
+	}
 
-    public RecordButton(Context ctx) {
-      super(ctx);
-      setText("Start recording");
-      setOnClickListener(clicker);
-    }
-  }
+	private void startRecording() {
 
-  class PlayButton extends Button {
-    boolean mStartPlaying = true;
+		mRecorder = new MediaRecorder();
+		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+		mRecorder.setOutputFile(mFileName);
+		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-    OnClickListener clicker = new OnClickListener() {
-      public void onClick(View v) {
-        onPlay(mStartPlaying);
-        if (mStartPlaying) {
-          setText("Stop playing");
-        } else {
-          setText("Start playing");
-        }
-        mStartPlaying = !mStartPlaying;
-      }
-    };
+		try {
+			mRecorder.prepare();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "prepare() failed");
+		}
 
-    public PlayButton(Context ctx) {
-      super(ctx);
-      setText("Start playing");
-      setOnClickListener(clicker);
+		mRecorder.start();
+		countDownTimer.start();
 
-    }
-  }
+	}
 
-  class PlayMetronomeButton extends Button {
-    boolean mStartPlayingMetronome = true;
+	private void stopRecording() {
+		mPlayButton.setEnabled(true);
+		mRecorder.stop();
+		mRecorder.release();
+		mRecorder = null;
+		countDownTimer.cancel();
+		countDownTimer.onFinish();
+	}
 
-    CountDownTimer timer = new CountDownTimer(TIMER_DURATION,
-        TIMER_CALLBACK_INTERVAL) {
+	class PlayButton extends Button {
+		boolean mStartPlaying = true;
 
-      @Override
-      public void onTick(long arg0) {
-        Log.i("tag", Long.toString(arg0));
-        setText(Integer.toString(Math.round(Math.round(arg0 / 1000.0))));
-      }
+		OnClickListener clicker = new OnClickListener() {
+			public void onClick(View v) {
+				onPlay(mStartPlaying);
+				if (mStartPlaying) {
+					setText("Stop playing");
+				} else {
+					setText("Start playing");
+				}
+				mStartPlaying = !mStartPlaying;
+			}
+		};
 
-      @Override
-      public void onFinish() {
-        onPlayMetronome(mStartPlayingMetronome);
-        if (mStartPlayingMetronome) {
-          setText("Stop Metronome");
-        } else {
-          setText("Start Metronome");
-        }
-        mStartPlayingMetronome = !mStartPlayingMetronome;
-      }
-    };
-    OnClickListener clicker = new OnClickListener() {
+		public PlayButton(Context ctx) {
+			super(ctx);
+			setText("Start playing");
+			setOnClickListener(clicker);
 
-      public void onClick(View v) {
-        if (mStartPlayingMetronome) {
-          timer.start();
-        } else {
-          onPlayMetronome(mStartPlayingMetronome);
-          mStartPlayingMetronome = !mStartPlayingMetronome;
-          setText("MN");
-        }
-      }
-    };
+		}
+	}
 
-    public PlayMetronomeButton(Context ctx) {
-      super(ctx);
-      setText("MN");
-      setOnClickListener(clicker);
-    }
-  }
+	class PlayMetronomeButton extends Button {
+		boolean mStartPlayingMetronome = true;
 
-  @Override
-  public void onPause() {
-    super.onPause();
-    if (mRecorder != null) {
-      mRecorder.release();
-      mRecorder = null;
-    }
+		CountDownTimer timer = new CountDownTimer(TIMER_DURATION,
+				TIMER_CALLBACK_INTERVAL) {
 
-    if (mPlayer != null) {
-      mPlayer.release();
-      mPlayer = null;
-    }
-  }
+			@Override
+			public void onTick(long arg0) {
+				Log.i("tag", Long.toString(arg0));
+				setText(Integer.toString(Math.round(Math.round(arg0 / 1000.0))));
+			}
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // TODO Auto-generated method stub
-    super.onActivityResult(requestCode, resultCode, data);
+			@Override
+			public void onFinish() {
+				onPlayMetronome(mStartPlayingMetronome);
+				if (mStartPlayingMetronome) {
+					setText("Stop Metronome");
+				} else {
+					setText("Start Metronome");
+				}
+				mStartPlayingMetronome = !mStartPlayingMetronome;
+			}
+		};
+		OnClickListener clicker = new OnClickListener() {
 
-    if (resultCode == RESULT_OK) {
-      data.putExtra("filename", mFileName);
-      setResult(RESULT_OK, data);
-      this.finish();
-    }
-  }
+			public void onClick(View v) {
+				if (mStartPlayingMetronome) {
+					timer.start();
+				} else {
+					onPlayMetronome(mStartPlayingMetronome);
+					mStartPlayingMetronome = !mStartPlayingMetronome;
+					setText("MN");
+				}
+			}
+		};
+
+		public PlayMetronomeButton(Context ctx) {
+			super(ctx);
+			setText("MN");
+			setOnClickListener(clicker);
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (mRecorder != null) {
+			mRecorder.release();
+			mRecorder = null;
+		}
+
+		if (mPlayer != null) {
+			mPlayer.release();
+			mPlayer = null;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK) {
+			data.putExtra("filename", mFileName);
+			setResult(RESULT_OK, data);
+			this.finish();
+		}
+	}
 }

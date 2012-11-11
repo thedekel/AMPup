@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,9 +44,14 @@ public class LessonAdapter extends BaseAdapter {
 		
 		v.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Intent i = new Intent(mContext, LessonActivity.class);
-				i.putExtra("lesson", lesson.toString());
-				mContext.startActivity(i);
+				Intent intent = new Intent(mContext, LessonActivity.class);
+		    	Log.e("LESSON", lesson.toString());
+		    	intent.putExtra("title", lesson.title);
+		    	intent.putExtra("subtitle", lesson.subtitle);
+		    	intent.putExtra("description", lesson.description);
+		    	intent.putExtra("audio", lesson.audioPath);
+		    	intent.putExtra("image", lesson.imagePath);
+		    	mContext.startActivity(intent);
 			}
 		});
 		
