@@ -52,36 +52,13 @@ public class LessonActivity extends FragmentActivity {
     TextView subtitle = (TextView) findViewById(R.id.subtitle);
     TextView description = (TextView) findViewById(R.id.description);
 
-    lesson = new Lesson(
-        "LESSON 4",
-        "FINDING YOUR PASSION",
-        "Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting Lorem Ipsum is simply dummy text of the printing and typesetting ");
-
-    title.setText(lesson.title);
-    subtitle.setText(lesson.subtitle);
-    description.setText(lesson.description);
-
-    moreComments = (Button) findViewById(R.id.more_comments);
-    addComment = (Button) findViewById(R.id.add_comment);
-
-    Button record = (Button) findViewById(R.id.submit_recording);
-    record.setOnClickListener(new OnClickListener() {
-
-      public void onClick(View v) {
-        Intent intent = new Intent(LessonActivity.this, LessonActivity.class);
-        intent.putExtra("id", lesson.id);
-        intent.putExtra("name", lesson.title);
-        startActivityForResult(intent, AUDIO_RECORD);
-      }
-    });
-
-    loadComments();
-
-    setTitle(lesson.title);
-
-    title.setText(lesson.title);
-    subtitle.setText(lesson.subtitle);
-    description.setText(lesson.description);
+    Bundle data = getIntent().getExtras();
+    
+    final String name = data.getString("title");
+    
+    title.setText(name);
+    subtitle.setText(data.getString("subtitle"));
+    description.setText(data.getString("description"));
 
     moreComments = (Button) findViewById(R.id.more_comments);
     addComment = (Button) findViewById(R.id.add_comment);
@@ -92,7 +69,7 @@ public class LessonActivity extends FragmentActivity {
 
       public void onClick(View v) {
         Intent intent = new Intent(LessonActivity.this, PostingActivity.class);
-        intent.putExtra("name", lesson.title);
+        intent.putExtra("name", name);
         startActivityForResult(intent, 0);
       }
     });
