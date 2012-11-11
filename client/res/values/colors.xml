@@ -2,11 +2,7 @@
 <resources>
 
     <color name="actionbar">#4E6595</color>
-    <color name="background">#edebe6</color>
-    <color name="button">#1a1a1a</color>
-    <color name="primary">#cccccc</color>
-    <color name="pimary_darker">#5C6C85</color>
-    <color name="secondary">#E6C58C</color>
+    <color name="tabs">#607C86</color>
     <color name="blue">#425964</color>
     <color name="red">#891F03</color>
 

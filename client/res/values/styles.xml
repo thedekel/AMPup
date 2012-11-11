@@ -3,10 +3,12 @@
     <style name="AppTheme" parent="android:Theme.Light">
         <item name="android:actionBarStyle">@style/CustomActionBar</item>
         <item name="android:buttonStyle">@style/CustomButton</item>
+        <item name="android:actionBarTabBarStyle">@style/CustomTabBar</item>
     </style>
 
     <style name="CustomActionBar" parent="android:style/Widget.Holo.ActionBar">
         <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:backgroundStacked">@color/red</item>
         <item name="android:titleTextStyle">@style/CustomActionBar.TitleTextStyle</item>
     </style>
 
@@ -19,6 +21,11 @@
         <item name="android:padding">10dp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:textStyle">bold</item>
+    </style>
+    
+     <style name="CustomTabBar" parent="android:style/Widget.Holo.Light.ActionBar.TabBar">
+        <item name="android:background">@color/red</item>
+        <item name="android:gravity">center</item>
     </style>
 
 </resources>
